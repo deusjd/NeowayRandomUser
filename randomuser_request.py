@@ -174,16 +174,19 @@ def normalize_data():
             insert into pais (nome)  
             select distinct trim(location_country)  
               from users
+              order by 1
               """
             , """
             insert into cidade (nome, pais_id)  
             select distinct trim(location_city) , p.id
               from users u
-              join pais p on u.location_country = p.nome ;
+              join pais p on u.location_country = p.nome
+              order by 1 ;
               """
             , """
              insert into tipo_logradouro (nome)
              select distinct trim(split_part(location_street_name,' ',1)) from users 
+             order by 1
               """
             , """
              insert into logradouro (cidade_id, tipo_logradouro_id, nome, cep, latitude, longitude)
@@ -196,6 +199,7 @@ def normalize_data():
                from users u 
                left join cidade c on u.location_city = c.nome 
                left join tipo_logradouro tl on trim(split_part(u.location_street_name,' ',1)) = tl.nome 
+               order by 3
               """
             , """
             insert into usuario (logradouro_id, cpf, nome, sbrenome, sexo, data_nascimento, email, telefone, celular, naturalidade, logradouro_numero, data_cadastro, endereco_completo, idade)
@@ -221,6 +225,7 @@ def normalize_data():
                                 and location_coordinates_longitude = l.longitude 
             left join tipo_logradouro tl on l.tipo_logradouro_id = tl.id
                 left join cidade c on l.cidade_id = c.id 
+                order by 3
             """)
     try:
         params = config()
