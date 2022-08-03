@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 
+from distutils.cmd import Command
+from imaplib import Commands
+from time import timezone
 from randomuser import RandomUser
 import psycopg2
 from config import config
+
 
 def create_tables():
     commands = (
@@ -29,8 +33,7 @@ def create_tables():
                 location_country varchar,
                 location_coordinates_latitude decimal(11,8),
                 location_coordinates_longitude decimal(11,8),
-                registered_date timestamp,
-                seed varchar
+                registered_date timestamp
                 )
         """)
 
@@ -52,7 +55,7 @@ def create_tables():
 
 def insert_users():   
 
-    user_list = RandomUser.generate_users(1, {'nat': 'br'})
+    user_list = RandomUser.generate_users(5000, {'nat': 'br'})
 
     sql_inset = """INSERT INTO users(gender,
                                     name_first,
@@ -69,37 +72,18 @@ def insert_users():
                                     location_country,
                                     location_coordinates_latitude,
                                     location_coordinates_longitude,
-                                    registered_date,
-                                    seed)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING users_id"""
+                                    registered_date)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING users_id"""
 
     users_id = None
 
+
     for x in user_list:
-
-        print(x.get_gender())
-        print(x.get_first_name())
-        print(x.get_last_name())
-        print(x.get_dob())
-        print(x.get_email())
-        print(x.get_phone())
-        print(x.get_cell())
-        print(x.get_nat())
-        print(x.get_street(split_number_name=True)['name'])
-        print(x.get_street(split_number_name=True)['number'])
-        print(x.get_city())
-        print(x.get_zipcode())
-        print(x.get_country())
-        print(x.get_coordinates()['latitude'])
-        print(x.get_coordinates()['longitude'])
-        print(x.get_registered())
-        print(x.get_info()['seed'])
-
         try:
             params = config()
             conn = psycopg2.connect(**params)
             cur = conn.cursor()
-            cur.execute(sql_inset, [(x.get_gender(),),(x.get_first_name(),),(x.get_last_name(),),(x.get_dob(),),(x.get_email(),),(x.get_phone(),),(x.get_cell(),),(x.get_nat(),),(x.get_street(split_number_name=True)['name'],),(x.get_street(split_number_name=True)['number'],),(x.get_city(),),(x.get_zipcode(),),(x.get_country(),),(x.get_coordinates()['latitude'],),(x.get_coordinates()['longitude'],),(x.get_registered(),),(x.get_info()['seed'],)])
+            cur.execute(sql_inset, [(x.get_gender(),),(x.get_first_name(),),(x.get_last_name(),),(x.get_dob(),),(x.get_email(),),(x.get_phone(),),(x.get_cell(),),(x.get_nat(),),(x.get_street(split_number_name=True)['name'],),(x.get_street(split_number_name=True)['number'],),(x.get_city(),),(x.get_zipcode(),),(x.get_country(),),(x.get_coordinates()['latitude'],),(x.get_coordinates()['longitude'],),(x.get_registered(),)])
             users_id = cur.fetchone()[0]
             conn.commit()
             cur.close()
