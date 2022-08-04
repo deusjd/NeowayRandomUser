@@ -86,3 +86,9 @@ BEGIN
 
 RETURN FALSE;
 END;
+
+
+$BODY$
+  LANGUAGE 'plpgsql' IMMUTABLE
+  COST 100;
+ 
