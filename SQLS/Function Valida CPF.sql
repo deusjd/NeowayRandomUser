@@ -1,5 +1,5 @@
 -- Function Valida CPF
-	  CREATE OR REPLACE FUNCTION fn_cnpj_cpf(text)
+CREATE OR REPLACE FUNCTION fn_cnpj_cpf(text)
   RETURNS boolean AS
 $BODY$
 DECLARE
