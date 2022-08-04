@@ -8,13 +8,13 @@ from config import config
 def create_tables():
     commands = (
         """
-            create table pais (
+            CREATE TABLE IF NOT EXISTS pais (
             id serial primary key,
             nome varchar
             )
             """,
             """
-            create table cidade (
+            CREATE TABLE IF NOT EXISTS cidade (
             id serial primary key,
             pais_id integer,
             nome varchar,
@@ -23,13 +23,13 @@ def create_tables():
             )
             """,
             """
-            create table tipo_logradouro (
+            CREATE TABLE IF NOT EXISTS tipo_logradouro (
             id serial primary key,
             nome varchar
             )
             """,
             """
-            create table logradouro (
+            CREATE TABLE IF NOT EXISTS logradouro (
             id serial primary key,
             cidade_id integer,
             tipo_logradouro_id integer,
@@ -42,7 +42,7 @@ def create_tables():
             )
             """,
             """
-            create table usuario (
+            CREATE TABLE IF NOT EXISTS usuario (
             id serial primary key,
             logradouro_id integer,
             cpf varchar,
