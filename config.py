@@ -2,7 +2,7 @@
 from configparser import ConfigParser
 
 
-def config(filename='C:/Users/user/Desktop/NEOWAY/NeowayRandomUser/database.ini', section='postgresql'):
+def config(filename='database.ini', section='postgresql'):
     # create a parser
     parser = ConfigParser()
     # read config file
@@ -19,7 +19,7 @@ def config(filename='C:/Users/user/Desktop/NEOWAY/NeowayRandomUser/database.ini'
 
     return db
 
-def config_postgres(filename='C:/Users/user/Desktop/NEOWAY/NeowayRandomUser/database.ini', section='postgresql1'):
+def config_postgres(filename='database.ini', section='postgresql1'):
     # create a parser
     parser = ConfigParser()
     # read config file

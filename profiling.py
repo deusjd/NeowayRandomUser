@@ -6,7 +6,7 @@ from config import config
 def profiling():
     command = (
         """
-                create table profiling as
+        create table profiling as
         -- Regra 1 - 'Quantidade Tabelas'
             select 'Regra 1 - Quantidade Tabelas' regra
                 , null tabela
