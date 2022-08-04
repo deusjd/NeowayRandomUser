@@ -18,6 +18,7 @@ def create_tables():
             id serial primary key,
             pais_id integer,
             nome varchar,
+            estado varchar,
             foreign key (pais_id) references pais (id)
             )
             """,
@@ -78,13 +79,15 @@ def create_tables():
                 location_street_name varchar,
                 location_street_number integer,
                 location_city varchar,
+                location_state varchar,
                 location_postcode varchar,
                 location_country varchar,
                 location_coordinates_latitude decimal(11,8),
                 location_coordinates_longitude decimal(11,8),
                 registered_date timestamp,
                 id_name varchar,
-                id_value varchar
+                id_value varchar,
+                api_request varchar
                 )
         """)
 
@@ -117,14 +120,16 @@ def insert_users():
                                     location_street_name,
                                     location_street_number,
                                     location_city,
+                                    location_state,
                                     location_postcode,
                                     location_country,
                                     location_coordinates_latitude,
                                     location_coordinates_longitude,
                                     registered_date,
                                     id_name,
-                                    id_value)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING users_id"""
+                                    id_value,
+                                    api_request)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING users_id"""
 
     users_id = None
 
@@ -153,13 +158,15 @@ def insert_users():
                                         (i['location']['street']['name'],),
                                         (i['location']['street']['number'],),
                                         (i['location']['city'],),
+                                        (i['location']['state'],),
                                         (i['location']['postcode'],),
                                         (i['location']['country'],),
                                         (i['location']['coordinates']['latitude'],),
                                         (i['location']['coordinates']['longitude'],),
                                         (i['registered']['date'],),
                                         (i['id']['name'],),
-                                        (i['id']['value'],)])
+                                        (i['id']['value'],),
+                                        (api_url,)])
                 users_id = cur.fetchone()[0]
                 conn.commit()
                 cur.close()
@@ -177,8 +184,8 @@ def normalize_data():
               order by 1
               """
             , """
-            insert into cidade (nome, pais_id)  
-            select distinct trim(location_city) , p.id
+            insert into cidade (nome, estado,  pais_id)  
+            select distinct trim(location_city), trim(location_state) , p.id
               from users u
               join pais p on u.location_country = p.nome
               order by 1 ;
@@ -216,7 +223,7 @@ def normalize_data():
             , nat 
             , location_street_number 
             , now() 
-            , concat(u.location_street_name,' ', u.location_street_number, ', ', u.location_postcode, ', ', u.location_city, ', ', u.location_country)
+            , concat(u.location_street_name,' ', u.location_street_number, ', ', u.location_postcode, ', ', u.location_city, ', ', u.location_state, ', ', u.location_country)
             , date_part('year',now())-date_part('year',u.dob_date)
             from users u 
             left join logradouro l on trim(replace(u.location_street_name,trim(split_part(u.location_street_name,' ',1)),'')) = l.nome 
@@ -224,7 +231,8 @@ def normalize_data():
                                 and u.location_coordinates_latitude  = l.latitude 
                                 and location_coordinates_longitude = l.longitude 
             left join tipo_logradouro tl on l.tipo_logradouro_id = tl.id
-                left join cidade c on l.cidade_id = c.id 
+            left join cidade c on l.cidade_id = c.id 
+            where u.location_state = c.estado 
                 order by 3
             """)
     try:
