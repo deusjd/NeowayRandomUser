@@ -204,7 +204,7 @@ def normalize_data():
                            , u.location_coordinates_latitude 
                            , u.location_coordinates_longitude  
                from users u 
-               left join cidade c on u.location_city = c.nome 
+               left join cidade c on trim(u.location_city) = c.nome and trim(u.location_state) = c.estado 
                left join tipo_logradouro tl on trim(split_part(u.location_street_name,' ',1)) = tl.nome 
                order by 3
               """
